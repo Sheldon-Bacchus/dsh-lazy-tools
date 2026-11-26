@@ -154,6 +154,8 @@ export function invokedTool(event: SessionEvent, windowStart: number): string | 
   if (event.type !== 'tool/call') return undefined
   if (event.time < windowStart) return undefined
   const name = event.data.name
+  // MCP tools are never deferred, so they must not consume auto-tune's top-N slots.
+  if (typeof name === 'string' && name.startsWith('mcp__')) return undefined
   // An activation call is evidence about the tool it names, not about itself.
   if (name === DEFER_EXECUTE_TOOL) return parseActivationTarget(event.data.arguments)
   return name

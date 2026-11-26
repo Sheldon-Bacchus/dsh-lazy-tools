@@ -228,7 +228,15 @@ export function apply(ctx: Context, config: LiveConfig): void {
   function configFor(agent: Agent): LazyToolsConfig {
     const cwd = agent.session?.header.cwd
     if (cwd === undefined) return globalConfig()
-    return projectConfigs.get(cwd) ?? globalConfig()
+    const project = projectConfigs.get(cwd)
+    if (project === undefined) return globalConfig()
+    // The operator's global noDefer entries are pins: auto-tune may tune
+    // the rest of the surface but must never kick them.
+    const global = globalConfig()
+    return {
+      ...project,
+      noDefer: [...(global.noDefer ?? []), ...(project.noDefer ?? [])],
+    }
   }
 
   /**

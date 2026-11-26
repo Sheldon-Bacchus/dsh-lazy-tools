@@ -156,6 +156,11 @@ export function resolveDeferConfig(
       if (matcher.action === 'noDefer' && compilePattern(matcher.pattern)(name)) noDeferNames.add(name)
     }
   }
+  // MCP tools belong to the external MCP client; this plugin only controls
+  // its own tool surface, so never defer mcp__*.
+  for (const name of allToolNames) {
+    if (name.startsWith('mcp__')) noDeferNames.add(name)
+  }
 
   const deferNames = new Set<string>()
   for (const name of allToolNames) {

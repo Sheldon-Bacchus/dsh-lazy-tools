@@ -109,10 +109,9 @@ describe('DSH 0.2.1-rc.5 & tool-slim keep strategy regression', () => {
       'chatgpt_connectors_call',
       'keel_spec',
       'diff_approval_annotate',
-      'mcp__dramaclaw__split_scenes',
     ]
 
-    for (const name of heavyTools) {
+    for (const name of [...heavyTools, 'mcp__dramaclaw__split_scenes']) {
       ctx.tools.register(fixture(name, `Heavy tool ${name}`))
     }
 
@@ -122,6 +121,8 @@ describe('DSH 0.2.1-rc.5 & tool-slim keep strategy regression', () => {
     for (const name of heavyTools) {
       expect(active).not.toContain(name)
     }
+    // MCP tools are exempt from deferral and remain active.
+    expect(active).toContain('mcp__dramaclaw__split_scenes')
 
     // Direct execution to deferred tool is blocked with descriptive hint
     const blocked = await execute(ctx, agent, 'codex_sketch', { input: 'design' })
